@@ -1,17 +1,16 @@
 
   it('tests clear method', async () => {
-    const usersByGroupCache = UsersByGroupCache.create(await newCacheService(), {
+    const stubClear = test.sinon.stub();
+    const stubCreateCacheService = {
+      create: test.sinon.stub().returns({ clear: stubClear }),
+    };
+    const usersByGroupCache = UsersByGroupCache.create(stubCreateCacheService, {
       max: 5,
     });
 
-    usersByGroupCache.__cache = {
-      clear: test.sinon.stub(),
-    };
-
     usersByGroupCache.clear();
 
-    test.chai.expect(usersByGroupCache.__cache.clear).to.have.callCount(1);
-    test.chai.expect(usersByGroupCache.__mappings).to.eql({});
+    test.chai.expect(stubClear).to.have.callCount(1);
   });
 
   it('tests userChanged returns if this.__mappings[username] is falsy', async () => {
@@ -20,16 +19,12 @@
     });
     const mockUserName = 'mockUserName';
 
-    usersByGroupCache.__mappings = {
-      mockUserName: null,
-    };
-
     const result = usersByGroupCache.userChanged(mockUserName);
 
     test.chai.expect(result).to.be.undefined;
   });
 
-  it('tests removeMappings', async () => {
+  it('tests removeMappings - check if this.__mappings[username] is falsy', async () => {
     const usersByGroupCache = UsersByGroupCache.create(await newCacheService(), {
       max: 5,
     });
