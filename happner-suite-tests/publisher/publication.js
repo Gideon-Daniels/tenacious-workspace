@@ -521,7 +521,7 @@ it("tests acknowledge -  race condition, as we may have acknowledgements already
       );
       cbTwo(null);
     });
-  publication.recipients = [0];
+  publication.recipients = [[{ data: { session: { id: 1 } } }]];
   publication.acknowledge(1);
 
   publication.publish(mockCallback);
