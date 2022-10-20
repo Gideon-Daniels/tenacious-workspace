@@ -1,3 +1,6 @@
+const commons = require("happn-commons");
+const async = commons.async;
+CONSTANTS = commons.constants;
 const Publication = require("../../../lib/services/publisher/publication");
 let mockHappn;
 let mockMessage;
@@ -49,7 +52,6 @@ afterEach(() => {
   mockMessage = null;
   mockOptions = null;
 });
-
 it("tests Publication - this.options.consistency is equal to CONSTANTS.CONSISTENCY.ACKNOWLEDGED and message.recipients is truthy.", () => {
   mockMessage.request.options.consistency = CONSTANTS.CONSISTENCY.ACKNOWLEDGED;
   const publication = new Publication(mockMessage, {}, mockHappn);
@@ -491,7 +493,7 @@ it("tests acknowledge - removes unackowledged recipients,this.result.acknowledge
   stubEachLimit.restore();
 });
 
-it("tests acknowledge -  race condition, as we may have acknowledgements already", async () => {
+it("tests acknowledge -  race condition, as we may have acknowledgements already.", async () => {
   mockMessage.request.options.consistency = CONSTANTS.CONSISTENCY.ACKNOWLEDGED;
   mockHappn.services.protocol.processMessageOut.callsFake((_, cb) => {
     cb(null);
@@ -521,21 +523,21 @@ it("tests acknowledge -  race condition, as we may have acknowledgements already
       );
       cbTwo(null);
     });
-  publication.recipients = [[{ data: { session: { id: 1 } } }]];
+  publication.recipients = [{ data: { session: { id: 1 } } }];
   publication.acknowledge(1);
 
   publication.publish(mockCallback);
 
   await require("node:timers/promises").setTimeout(500);
 
-  // test.chai.expect(publication.unacknowledged_recipients.length).to.equal(0);
-  // test.chai.expect(mockCallback).to.have.been.calledWithExactly(undefined, {
-  //   successful: 1,
-  //   failed: 0,
-  //   skipped: 0,
-  //   acknowledged: 1,
-  //   queued: 1,
-  // });
+  test.chai.expect(publication.unacknowledged_recipients.length).to.equal(1);
+  test.chai.expect(mockCallback).to.have.been.calledWithExactly(undefined, {
+    successful: 1,
+    failed: 0,
+    skipped: 0,
+    acknowledged: 0,
+    queued: 1,
+  });
 
   stubEachLimit.restore();
 });
