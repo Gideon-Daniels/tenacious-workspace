@@ -1,5 +1,10 @@
-const HappnDbProviderLoki = require("happn-db-provider-loki");
-const HappnDbProviderMongo = require("happn-db-provider-mongo");
+const commons = require('happn-commons');
+const constants = require('happn-commons/lib/constants');
+async = commons.async;
+CONSTANTS = commons.constants;
+const HappnDbProviderLoki = require('happn-db-provider-loki');
+const HappnDbProviderMongo = require('happn-db-provider-mongo');
+const HappnDbProviderNeDb = require('happn-db-provider-nedb');
 
 let mockHappn;
 let mockConfig;
